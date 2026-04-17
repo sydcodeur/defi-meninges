@@ -7,29 +7,36 @@
 *.pem
 
 # =========================
-# FRONTEND (Next.js / Node)
+# FRONTEND (Angular)
 # =========================
 frontend/node_modules/
-frontend/.pnp
-frontend/.pnp.*
-frontend/.yarn/*
-!frontend/.yarn/patches
-!frontend/.yarn/plugins
-!frontend/.yarn/releases
-!frontend/.yarn/versions
+frontend/dist/
+frontend/tmp/
+frontend/out-tsc/
+frontend/bazel-out/
+frontend/.angular/
 frontend/coverage/
-frontend/.next/
-frontend/out/
-frontend/build/
-frontend/.vercel/
+frontend/.sass-cache/
+frontend/connect.lock/
+frontend/testem.log
+frontend/typings/
+frontend/__screenshots__/
 frontend/*.tsbuildinfo
-frontend/next-env.d.ts
 
 # Logs JS
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# Gestion fine de VS Code pour le Frontend
+frontend/.vscode/*
+!frontend/.vscode/settings.json
+!frontend/.vscode/tasks.json
+!frontend/.vscode/launch.json
+!frontend/.vscode/extensions.json
+!frontend/.vscode/mcp.json
+frontend/.history/*
 
 ## =========================
 # BACKEND (Spring Boot / Java)
