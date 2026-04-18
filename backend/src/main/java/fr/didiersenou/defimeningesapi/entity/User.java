@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import fr.didiersenou.defimeningesapi.entity.enums.Role;
+import fr.didiersenou.defimeningesapi.enums.Role;
 
 /**
  * Entity class representing a User in the Defi-Meninges game.

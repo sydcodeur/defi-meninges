@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import fr.didiersenou.defimeningesapi.entity.enums.GameMode;
-import fr.didiersenou.defimeningesapi.entity.enums.GameStatus;
+import fr.didiersenou.defimeningesapi.enums.GameMode;
+import fr.didiersenou.defimeningesapi.enums.GameStatus;
 
 /**
  * Entity class representing a Game Session : Solo or Multiplayer
