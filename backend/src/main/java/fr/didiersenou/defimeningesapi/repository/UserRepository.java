@@ -1,8 +1,9 @@
-package com.didiersenou.defimeningesapi.repository;
+package fr.didiersenou.defimeningesapi.repository;
 
-import com.didiersenou.defimeningesapi.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import fr.didiersenou.defimeningesapi.entity.User;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -1,11 +1,12 @@
-package com.didiersenou.defimeningesapi.entity;
+package fr.didiersenou.defimeningesapi.entity;
 
-import com.didiersenou.defimeningesapi.entity.enums.GameMode;
-import com.didiersenou.defimeningesapi.entity.enums.GameStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import fr.didiersenou.defimeningesapi.entity.enums.GameMode;
+import fr.didiersenou.defimeningesapi.entity.enums.GameStatus;
 
 /**
  * Entity class representing a Game Session : Solo or Multiplayer

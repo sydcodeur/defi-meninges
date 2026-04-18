@@ -1,4 +1,4 @@
-package com.didiersenou.defimeningesapi.entity;
+package fr.didiersenou.defimeningesapi.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

@@ -1,12 +1,13 @@
-package com.didiersenou.defimeningesapi.entity;
+package fr.didiersenou.defimeningesapi.entity;
 
-import com.didiersenou.defimeningesapi.entity.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import fr.didiersenou.defimeningesapi.entity.enums.Role;
 
 /**
  * Entity class representing a User in the Defi-Meninges game.
