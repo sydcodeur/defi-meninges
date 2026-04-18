@@ -1,4 +1,4 @@
-package fr.didiersenou.defimeningesapi.entity.enums;
+package fr.didiersenou.defimeningesapi.enums;
 
 public enum GameMode {
     SOLO, MULTIPLAYER
