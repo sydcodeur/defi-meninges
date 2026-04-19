@@ -1,0 +1,48 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+    <div class="max-w-4xl w-full">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-slate-800 mb-3">Défi Méninges</h1>
+            <p class="text-xl text-slate-500">Testez vos connaissances et défiez vos amis</p>
+        </div>
+
+        <!-- Mode Selection -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-slate-700 mb-6 text-center">
+                Choisissez votre mode de jeu
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Solo Mode Card -->
+                <p-card (click)="selectMode(GameMode.SOLO)" [ngClass]="{
+            'ring-4 ring-emerald-500': selectedMode === GameMode.SOLO,
+            'hover:bg-slate-100': selectedMode !== GameMode.SOLO
+          }" class="cursor-pointer transition-all duration-200">
+                    <div class="text-center py-8">
+                        <i class="pi pi-user text-6xl text-emerald-600 mb-4"></i>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Mode Solo</h3>
+                        <p class="text-slate-600">Jouez à votre rythme et battez vos records personnels</p>
+                    </div>
+                </p-card>
+
+                <!-- Multiplayer Mode Card -->
+                <p-card (click)="selectMode(GameMode.MULTIPLAYER)" [ngClass]="{
+            'ring-4 ring-emerald-500': selectedMode === GameMode.MULTIPLAYER,
+            'hover:bg-slate-100': selectedMode !== GameMode.MULTIPLAYER
+          }" class="cursor-pointer transition-all duration-200">
+                    <div class="text-center py-8">
+                        <i class="pi pi-users text-6xl text-emerald-600 mb-4"></i>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Mode Multijoueur</h3>
+                        <p class="text-slate-600">Affrontez d'autres joueurs en temps réel</p>
+                    </div>
+                </p-card>
+            </div>
+        </div>
+
+        <!-- Start Button -->
+        <div class="text-center">
+            <p-button label="Démarrer la partie" icon="pi pi-play" [disabled]="!selectedMode" severity="success"
+                size="large" styleClass="px-12 py-3 text-lg font-semibold" (onClick)="startGame()" />
+        </div>
+    </div>
+</div>
