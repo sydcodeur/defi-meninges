@@ -3,9 +3,13 @@ package fr.didiersenou.defimeningesapi.seeder;
 import fr.didiersenou.defimeningesapi.entity.Answer;
 import fr.didiersenou.defimeningesapi.entity.Category;
 import fr.didiersenou.defimeningesapi.entity.Question;
+import fr.didiersenou.defimeningesapi.entity.User;
+import fr.didiersenou.defimeningesapi.enums.Role;
 import fr.didiersenou.defimeningesapi.repository.AnswerRepository;
 import fr.didiersenou.defimeningesapi.repository.CategoryRepository;
 import fr.didiersenou.defimeningesapi.repository.QuestionRepository;
+import fr.didiersenou.defimeningesapi.repository.UserRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -21,13 +25,16 @@ public class DataSeeder implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
+    private final UserRepository userRepository;
 
     public DataSeeder(CategoryRepository categoryRepository,
             QuestionRepository questionRepository,
-            AnswerRepository answerRepository) {
+            AnswerRepository answerRepository,
+            UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -40,6 +47,7 @@ public class DataSeeder implements CommandLineRunner {
 
         log.info("Starting database initialization with multilingual seed data...");
 
+        seedTestUser();
         seedGeneralKnowledgeCategory();
         seedTechAndDevCategory();
 
@@ -184,5 +192,23 @@ public class DataSeeder implements CommandLineRunner {
         answer.setLocale(locale);
         answer.setQuestion(question);
         return answer;
+    }
+
+    private void seedTestUser() {
+        // Check if test user already exists to maintain idempotency
+        if (userRepository.count() > 0) {
+            return;
+        }
+
+        User testUser = new User();
+        testUser.setUsername("testuser");
+        testUser.setEmail("test@defimeninges.com");
+        // For test purposes
+        testUser.setPasswordHash("password");
+        testUser.setRole(Role.PLAYER);
+        testUser.setTotalScore(0);
+        User savedUser = userRepository.save(testUser);
+
+        log.info("Test user created with ID: {}", savedUser.getId());
     }
 }
