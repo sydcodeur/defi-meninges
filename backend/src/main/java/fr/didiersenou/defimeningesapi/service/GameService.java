@@ -26,10 +26,10 @@ public class GameService {
     private final GamePlayerMapper gamePlayerMapper;
 
     public GameService(GameRepository gameRepository,
-                       GamePlayerRepository gamePlayerRepository,
-                       UserRepository userRepository,
-                       GameMapper gameMapper,
-                       GamePlayerMapper gamePlayerMapper) {
+            GamePlayerRepository gamePlayerRepository,
+            UserRepository userRepository,
+            GameMapper gameMapper,
+            GamePlayerMapper gamePlayerMapper) {
         this.gameRepository = gameRepository;
         this.gamePlayerRepository = gamePlayerRepository;
         this.userRepository = userRepository;
@@ -39,7 +39,6 @@ public class GameService {
 
     @Transactional
     public GameDTO createGame(GameMode mode, UUID creatorId) {
-        // Vérification de l'existence du créateur
         User user = userRepository.findById(creatorId)
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
 

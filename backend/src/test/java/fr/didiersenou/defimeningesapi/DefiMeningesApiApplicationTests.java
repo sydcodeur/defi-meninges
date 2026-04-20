@@ -1,4 +1,4 @@
-package com.didiersenou.defi_meninges_api;
+package fr.didiersenou.defimeningesapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
