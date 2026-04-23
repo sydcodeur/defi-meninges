@@ -38,7 +38,7 @@ Ouvrez un terminal et placez-vous à la racine du projet :
 
 ```bash
 cd backend
-./mvnw spring-boot:run
+set -a && source ../.env && set +a && mvn clean spring-boot:run
 ```
 L'API REST sera accessible sur : http://localhost:8080/api
 

@@ -7,6 +7,7 @@ import fr.didiersenou.defimeningesapi.dto.auth.RegisterRequest;
 import fr.didiersenou.defimeningesapi.entity.RefreshToken;
 import fr.didiersenou.defimeningesapi.entity.User;
 import fr.didiersenou.defimeningesapi.enums.Role;
+import fr.didiersenou.defimeningesapi.exception.DuplicateResourceException;
 import fr.didiersenou.defimeningesapi.repository.UserRepository;
 import fr.didiersenou.defimeningesapi.security.CustomUserDetails;
 import fr.didiersenou.defimeningesapi.security.JwtService;
@@ -41,10 +42,10 @@ public class AuthenticationService {
     @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new RuntimeException("Email already in use");
+            throw new DuplicateResourceException("Email already in use");
         }
         if (userRepository.findByUsername(request.username()).isPresent()) {
-            throw new RuntimeException("Username already in use");
+            throw new DuplicateResourceException("Username already in use");
         }
 
         User user = new User();
