@@ -1,8 +1,6 @@
 package fr.didiersenou.defimeningesapi.exception;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -21,14 +19,12 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private final MessageSource messageSource;
     private final Environment env;
 
     @Value("${app.api.base-url}")
     private String baseUrl;
 
-    public GlobalExceptionHandler(MessageSource messageSource, Environment env) {
-        this.messageSource = messageSource;
+    public GlobalExceptionHandler(Environment env) {
         this.env = env;
     }
 
@@ -62,6 +58,15 @@ public class GlobalExceptionHandler {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
         problemDetail.setTitle("Resource Conflict");
         problemDetail.setType(URI.create(baseUrl + "/errors/conflict"));
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(GameAlreadyStartedException.class)
+    public ProblemDetail handleGameAlreadyStartedException(GameAlreadyStartedException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        problemDetail.setTitle("Game Already Started");
+        problemDetail.setType(URI.create(baseUrl + "/errors/game-already-started"));
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }

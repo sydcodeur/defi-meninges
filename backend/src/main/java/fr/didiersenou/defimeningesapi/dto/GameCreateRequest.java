@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public record GameCreateRequest(
                 @NotNull(message = "Le mode de jeu est obligatoire") GameMode mode,
-                @NotNull(message = "L'ID du créateur est obligatoire") UUID creatorId) {
+                @NotNull(message = "L'ID de la catégorie est obligatoire") UUID categoryId) {
 }
