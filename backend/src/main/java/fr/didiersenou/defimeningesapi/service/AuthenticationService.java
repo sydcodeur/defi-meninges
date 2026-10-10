@@ -8,11 +8,13 @@ import fr.didiersenou.defimeningesapi.entity.RefreshToken;
 import fr.didiersenou.defimeningesapi.entity.User;
 import fr.didiersenou.defimeningesapi.enums.Role;
 import fr.didiersenou.defimeningesapi.exception.DuplicateResourceException;
+import fr.didiersenou.defimeningesapi.exception.JwtAuthenticationException;
 import fr.didiersenou.defimeningesapi.repository.UserRepository;
 import fr.didiersenou.defimeningesapi.security.CustomUserDetails;
 import fr.didiersenou.defimeningesapi.security.JwtService;
 import fr.didiersenou.defimeningesapi.security.RefreshTokenService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,7 +77,7 @@ public class AuthenticationService {
                         request.password()));
 
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
         String jwtToken = jwtService.generateToken(new CustomUserDetails(user));
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
@@ -102,6 +104,6 @@ public class AuthenticationService {
                             user.getUsername(),
                             user.getRole().name());
                 })
-                .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
+                .orElseThrow(() -> new JwtAuthenticationException("Invalid refresh token"));
     }
 }

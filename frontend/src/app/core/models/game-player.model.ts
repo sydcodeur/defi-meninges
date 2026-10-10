@@ -1,8 +1,11 @@
-import { User } from './user.model';
+export interface Player {
+    id: string;
+    username: string;
+}
 
 export interface GamePlayer {
     id: string;
     gameId: string;
-    user: User;
+    user: Player;
     score: number;
 }
