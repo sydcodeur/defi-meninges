@@ -42,6 +42,11 @@ public class Game {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @NotNull(message = "{validation.game.host.required}")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "host_id", nullable = false)
+    private User host;
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GamePlayer> gamePlayers = new ArrayList<>();
 
@@ -56,11 +61,12 @@ public class Game {
     public Game() {
     }
 
-    public Game(String gameCode, GameMode mode, GameStatus status, Category category) {
+    public Game(String gameCode, GameMode mode, GameStatus status, Category category, User host) {
         this.gameCode = gameCode;
         this.mode = mode;
         this.status = status;
         this.category = category;
+        this.host = host;
     }
 
     // Getters and Setters
@@ -102,6 +108,14 @@ public class Game {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public User getHost() {
+        return host;
+    }
+
+    public void setHost(User host) {
+        this.host = host;
     }
 
     public List<GamePlayer> getGamePlayers() {

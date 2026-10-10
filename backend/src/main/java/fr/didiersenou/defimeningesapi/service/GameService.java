@@ -31,6 +31,7 @@ public class GameService {
 
     private static final String GAME_CODE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int GAME_CODE_LENGTH = 4;
+    private static final int GAME_CODE_MAX_ATTEMPTS = 10;
     private static final SecureRandom random = new SecureRandom();
 
     private final GameRepository gameRepository;
@@ -72,6 +73,7 @@ public class GameService {
         game.setMode(mode);
         game.setStatus(GameStatus.WAITING);
         game.setCategory(category);
+        game.setHost(creator);
         game = gameRepository.save(game);
 
         GamePlayer gamePlayer = new GamePlayer();
@@ -142,20 +144,14 @@ public class GameService {
     }
 
     private String generateUniqueGameCode() {
-        String code;
-        int attempts = 0;
-        final int maxAttempts = 10;
-
-        do {
-            code = generateRandomCode();
-            attempts++;
-        } while (gameRepository.findByGameCode(code).isPresent() && attempts < maxAttempts);
-
-        if (attempts >= maxAttempts) {
-            throw new RuntimeException("Failed to generate unique game code after " + maxAttempts + " attempts");
+        for (int attempt = 0; attempt < GAME_CODE_MAX_ATTEMPTS; attempt++) {
+            String code = generateRandomCode();
+            if (!gameRepository.existsByGameCode(code)) {
+                return code;
+            }
         }
-
-        return code;
+        throw new IllegalStateException(
+                "Failed to generate unique game code after " + GAME_CODE_MAX_ATTEMPTS + " attempts");
     }
 
     private String generateRandomCode() {

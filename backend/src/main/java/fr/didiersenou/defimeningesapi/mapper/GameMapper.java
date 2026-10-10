@@ -6,7 +6,6 @@ import fr.didiersenou.defimeningesapi.entity.Game;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class GameMapper {
@@ -23,9 +22,7 @@ public class GameMapper {
         }
 
         List<GamePlayerDTO> playerDTOs = entity.getGamePlayers() != null
-                ? entity.getGamePlayers().stream()
-                        .map(gamePlayerMapper::toDTO)
-                        .collect(Collectors.toList())
+                ? entity.getGamePlayers().stream().map(gamePlayerMapper::toDTO).toList()
                 : List.of();
 
         return new GameDTO(
@@ -34,7 +31,7 @@ public class GameMapper {
                 entity.getMode(),
                 entity.getStatus(),
                 entity.getCategory() != null ? entity.getCategory().getName() : null,
-                !entity.getGamePlayers().isEmpty() ? entity.getGamePlayers().get(0).getUser().getId() : null,
+                entity.getHost() != null ? entity.getHost().getId() : null,
                 playerDTOs,
                 entity.getCreatedAt());
     }
