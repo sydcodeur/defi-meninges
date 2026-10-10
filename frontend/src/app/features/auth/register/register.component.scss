@@ -1,0 +1,88 @@
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background: #f8fafc;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 500px;
+}
+
+.card-header {
+  text-align: center;
+  padding: 2rem 2rem 1rem;
+
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--text-color);
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--text-color-secondary);
+  }
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem 0;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+  }
+}
+
+.card-footer {
+  text-align: center;
+  padding: 1rem 2rem 2rem;
+
+  p {
+    margin: 0 0 1rem;
+    color: var(--text-color-secondary);
+
+    a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .back-link {
+    color: var(--text-color-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+
+    &:hover {
+      color: var(--text-color);
+    }
+  }
+}
+
+:host ::ng-deep {
+  .p-password {
+    width: 100%;
+
+    input {
+      width: 100%;
+    }
+  }
+}

@@ -1,0 +1,91 @@
+<div class="register-container">
+  <p-card class="register-card">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <h2>Inscription</h2>
+        <p class="subtitle">Créez votre compte pour commencer</p>
+      </div>
+    </ng-template>
+
+    <form (ngSubmit)="onSubmit()" class="register-form">
+      @if (errorMessage()) {
+        <p-message severity="error" [text]="errorMessage()!" />
+      }
+
+      <div class="field">
+        <label for="username">Nom d'utilisateur</label>
+        <input 
+          pInputText 
+          id="username" 
+          type="text"
+          [(ngModel)]="formData.username"
+          name="username"
+          placeholder="Votre pseudo"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input 
+          pInputText 
+          id="email" 
+          type="email"
+          [(ngModel)]="formData.email"
+          name="email"
+          placeholder="votre@email.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <p-password 
+          id="password"
+          [(ngModel)]="formData.password"
+          name="password"
+          placeholder="Minimum 6 caractères"
+          [toggleMask]="true"
+          [feedback]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          required
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <p-password 
+          id="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          placeholder="Retapez votre mot de passe"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          required
+          autocomplete="new-password"
+        />
+      </div>
+
+      <p-button 
+        type="submit"
+        label="S'inscrire"
+        [loading]="isLoading()"
+        [disabled]="isLoading()"
+        styleClass="w-full"
+      />
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="card-footer">
+        <p>Déjà un compte ? <a routerLink="/login">Se connecter</a></p>
+        <a routerLink="/" class="back-link">← Retour à l'accueil</a>
+      </div>
+    </ng-template>
+  </p-card>
+</div>

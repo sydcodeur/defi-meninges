@@ -14,28 +14,36 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Solo Mode Card -->
-                <p-card (click)="selectMode(GameMode.SOLO)" [ngClass]="{
-            'ring-4 ring-emerald-500': selectedMode === GameMode.SOLO,
-            'hover:bg-slate-100': selectedMode !== GameMode.SOLO
-          }" class="cursor-pointer transition-all duration-200">
-                    <div class="text-center py-8">
-                        <i class="pi pi-user text-6xl text-emerald-600 mb-4"></i>
-                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Mode Solo</h3>
-                        <p class="text-slate-600">Jouez à votre rythme et battez vos records personnels</p>
-                    </div>
-                </p-card>
+                <div (click)="selectMode(GameMode.SOLO)" 
+                     class="cursor-pointer transition-all rounded-lg"
+                     [class.ring-4]="selectedMode === GameMode.SOLO"
+                     [class.ring-emerald-500]="selectedMode === GameMode.SOLO"
+                     [class.shadow-xl]="selectedMode === GameMode.SOLO"
+                     [class.scale-105]="selectedMode === GameMode.SOLO">
+                    <p-card>
+                        <div class="text-center py-8">
+                            <i class="pi pi-user text-6xl text-emerald-600 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-slate-800 mb-2">Mode Solo</h3>
+                            <p class="text-slate-600">Jouez à votre rythme et battez vos records personnels</p>
+                        </div>
+                    </p-card>
+                </div>
 
                 <!-- Multiplayer Mode Card -->
-                <p-card (click)="selectMode(GameMode.MULTIPLAYER)" [ngClass]="{
-            'ring-4 ring-emerald-500': selectedMode === GameMode.MULTIPLAYER,
-            'hover:bg-slate-100': selectedMode !== GameMode.MULTIPLAYER
-          }" class="cursor-pointer transition-all duration-200">
-                    <div class="text-center py-8">
-                        <i class="pi pi-users text-6xl text-emerald-600 mb-4"></i>
-                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Mode Multijoueur</h3>
-                        <p class="text-slate-600">Affrontez d'autres joueurs en temps réel</p>
-                    </div>
-                </p-card>
+                <div (click)="selectMode(GameMode.MULTIPLAYER)" 
+                     class="cursor-pointer transition-all rounded-lg"
+                     [class.ring-4]="selectedMode === GameMode.MULTIPLAYER"
+                     [class.ring-emerald-500]="selectedMode === GameMode.MULTIPLAYER"
+                     [class.shadow-xl]="selectedMode === GameMode.MULTIPLAYER"
+                     [class.scale-105]="selectedMode === GameMode.MULTIPLAYER">
+                    <p-card>
+                        <div class="text-center py-8">
+                            <i class="pi pi-users text-6xl text-emerald-600 mb-4"></i>
+                            <h3 class="text-2xl font-bold text-slate-800 mb-2">Mode Multijoueur</h3>
+                            <p class="text-slate-600">Affrontez d'autres joueurs en temps réel</p>
+                        </div>
+                    </p-card>
+                </div>
             </div>
         </div>
 
