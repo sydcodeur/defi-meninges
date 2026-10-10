@@ -11,10 +11,28 @@ import java.util.UUID;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, UUID> {
-    
-    @Query("SELECT g FROM Game g LEFT JOIN FETCH g.gamePlayers gp LEFT JOIN FETCH gp.user LEFT JOIN FETCH g.category WHERE g.gameCode = :gameCode")
+
+    @Query("""
+            SELECT g FROM Game g
+            JOIN FETCH g.host
+            JOIN FETCH g.category
+            LEFT JOIN FETCH g.gamePlayers gp
+            LEFT JOIN FETCH gp.user
+            WHERE g.gameCode = :gameCode
+            ORDER BY gp.joinedAt
+            """)
     Optional<Game> findByGameCode(@Param("gameCode") String gameCode);
-    
-    @Query("SELECT g FROM Game g LEFT JOIN FETCH g.gamePlayers gp LEFT JOIN FETCH gp.user LEFT JOIN FETCH g.category WHERE g.id = :id")
+
+    @Query("""
+            SELECT g FROM Game g
+            JOIN FETCH g.host
+            JOIN FETCH g.category
+            LEFT JOIN FETCH g.gamePlayers gp
+            LEFT JOIN FETCH gp.user
+            WHERE g.id = :id
+            ORDER BY gp.joinedAt
+            """)
     Optional<Game> findByIdWithPlayers(@Param("id") UUID id);
+
+    boolean existsByGameCode(String gameCode);
 }
