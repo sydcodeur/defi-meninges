@@ -2,6 +2,8 @@ package fr.didiersenou.defimeningesapi.security;
 
 import fr.didiersenou.defimeningesapi.entity.RefreshToken;
 import fr.didiersenou.defimeningesapi.entity.User;
+import fr.didiersenou.defimeningesapi.exception.JwtAuthenticationException;
+import fr.didiersenou.defimeningesapi.exception.ResourceNotFoundException;
 import fr.didiersenou.defimeningesapi.repository.RefreshTokenRepository;
 import fr.didiersenou.defimeningesapi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,9 +35,8 @@ public class RefreshTokenService {
     @Transactional
     public RefreshToken createRefreshToken(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        // Revoke all existing tokens for this user
         refreshTokenRepository.revokeAllUserTokens(user);
 
         RefreshToken refreshToken = new RefreshToken();
@@ -50,7 +51,7 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.isExpired() || token.isRevoked()) {
             refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh token was expired or revoked. Please sign in again.");
+            throw new JwtAuthenticationException("Refresh token expired or revoked");
         }
         return token;
     }
