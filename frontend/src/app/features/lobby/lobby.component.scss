@@ -1,0 +1,73 @@
+.lobby-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f8fafc;
+}
+
+.lobby-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1rem 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  h1 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 2rem;
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .username {
+      color: var(--text-color);
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.lobby-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+:host ::ng-deep {
+  .lobby-card {
+    .p-card-header {
+      background: var(--primary-color);
+      color: white;
+      padding: 1.5rem;
+
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+    }
+
+    .p-card-body {
+      padding: 2rem;
+
+      p {
+        margin: 0 0 1rem;
+        font-size: 1.1rem;
+      }
+
+      ul {
+        margin: 1rem 0;
+        padding-left: 1.5rem;
+
+        li {
+          margin: 0.5rem 0;
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+}

@@ -1,10 +1,24 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './features/home/home';
-
 
 export const routes: Routes = [
-    {
-        path: '',
-        component: HomeComponent
-    }
+  {
+    path: '',
+    loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent)
+  },
+  {
+    path: 'lobby',
+    loadComponent: () => import('./features/lobby/lobby.component').then(m => m.LobbyComponent)
+  },
+  {
+    path: '**',
+    redirectTo: ''
+  }
 ];

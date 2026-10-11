@@ -1,9 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { GameMode } from '../../core/models/game-mode.enum';
 import { GameService } from '../../core/services/game.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -14,28 +16,31 @@ import { GameService } from '../../core/services/game.service';
 })
 export class HomeComponent {
   private readonly gameService = inject(GameService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   GameMode = GameMode;
   selectedMode: GameMode | null = null;
 
+  readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly currentUser = this.authService.currentUser;
+
   selectMode(mode: GameMode): void {
     this.selectedMode = mode;
+    console.log('Mode sélectionné:', mode);
   }
 
   startGame(): void {
-    if (this.selectedMode) {
-      // TODO: Replace with real user ID from authentication
-      const mockCreatorId = 'f264223e-8a1c-4388-b57a-341e4eb959e3';
-
-      this.gameService.createGame(this.selectedMode, mockCreatorId).subscribe({
-        next: (game) => {
-          console.log('Game created successfully:', game);
-          // TODO: Navigate to game page
-        },
-        error: (error) => {
-          console.error('Error during game creation:', error);
-          // TODO: Show user-friendly error message
-        }
-      });
+    if (!this.selectedMode) {
+      return;
     }
+
+    if (!this.isAuthenticated()) {
+      localStorage.setItem('redirect_after_login', '/lobby');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.router.navigate(['/lobby']);
   }
 }

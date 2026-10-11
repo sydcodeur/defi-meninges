@@ -1,0 +1,34 @@
+<div class="lobby-container">
+  <div class="lobby-header">
+    <h1>Lobby - Défi Méninges</h1>
+    @if (currentUser()) {
+      <div class="user-info">
+        <span class="username">{{ currentUser()!.username }}</span>
+        <p-button 
+          label="Déconnexion" 
+          icon="pi pi-sign-out"
+          (onClick)="logout()"
+          [outlined]="true"
+          size="small"
+        />
+      </div>
+    }
+  </div>
+
+  <div class="lobby-content">
+    <p-card styleClass="lobby-card">
+      <ng-template pTemplate="header">
+        <h2>Bienvenue dans le lobby !</h2>
+      </ng-template>
+
+      <p>Le système de lobby est en cours de développement.</p>
+      <p>Prochaines fonctionnalités :</p>
+      <ul>
+        <li>Créer une partie avec code unique</li>
+        <li>Rejoindre une partie via code</li>
+        <li>Voir la liste des joueurs en attente</li>
+        <li>Lancer la partie (hôte uniquement)</li>
+      </ul>
+    </p-card>
+  </div>
+</div>

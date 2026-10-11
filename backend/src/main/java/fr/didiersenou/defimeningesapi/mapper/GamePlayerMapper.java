@@ -1,7 +1,7 @@
 package fr.didiersenou.defimeningesapi.mapper;
 
 import fr.didiersenou.defimeningesapi.dto.GamePlayerDTO;
-import fr.didiersenou.defimeningesapi.dto.UserDTO;
+import fr.didiersenou.defimeningesapi.dto.PlayerDTO;
 import fr.didiersenou.defimeningesapi.entity.GamePlayer;
 import org.springframework.stereotype.Component;
 
@@ -22,12 +22,12 @@ public class GamePlayerMapper {
         }
 
         UUID gameId = (entity.getGame() != null) ? entity.getGame().getId() : null;
-        UserDTO userDTO = userMapper.toDTO(entity.getUser());
+        PlayerDTO player = userMapper.toPlayerDTO(entity.getUser());
 
         return new GamePlayerDTO(
                 entity.getId(),
                 gameId,
-                userDTO,
+                player,
                 entity.getScore());
     }
 }

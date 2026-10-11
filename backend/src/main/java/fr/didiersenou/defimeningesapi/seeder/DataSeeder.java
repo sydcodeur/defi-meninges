@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,36 +30,43 @@ public class DataSeeder implements CommandLineRunner {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SeedTestUserProperties testUserProperties;
 
     public DataSeeder(CategoryRepository categoryRepository,
             QuestionRepository questionRepository,
             AnswerRepository answerRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            SeedTestUserProperties testUserProperties) {
         this.categoryRepository = categoryRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.testUserProperties = testUserProperties;
     }
 
     @Override
+    @Transactional
     public void run(String... args) {
-        // Prevents duplicate data insertion on application restart
+        seedTestUser();
+        seedCategories();
+    }
+
+    private void seedCategories() {
         if (categoryRepository.count() > 0) {
-            log.info("Database already seeded. Skipping initial data insertion.");
+            log.info("Categories already seeded, skipping.");
             return;
         }
 
-        log.info("Starting database initialization with multilingual seed data...");
-
-        seedTestUser();
         seedGeneralKnowledgeCategory();
         seedTechAndDevCategory();
 
-        log.info("Database seeding completed successfully. Added 4 categories, 8 questions, and 32 answers (EN + FR).");
+        log.info("Seeded 4 categories, 8 questions and 32 answers (EN + FR).");
     }
 
     private void seedGeneralKnowledgeCategory() {
-        // English version
         Category generalKnowledgeEn = createAndSaveCategory("General Knowledge", "en", 15);
 
         Question q1En = createAndSaveQuestion(
@@ -84,7 +93,6 @@ public class DataSeeder implements CommandLineRunner {
                 createAnswer("7", true, "en", q2En),
                 createAnswer("8", false, "en", q2En)));
 
-        // French version
         Category generalKnowledgeFr = createAndSaveCategory("Culture Générale", "fr", 15);
 
         Question q1Fr = createAndSaveQuestion(
@@ -113,7 +121,6 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedTechAndDevCategory() {
-        // English version
         Category techAndDevEn = createAndSaveCategory("Tech & Dev", "en", 15);
 
         Question q1En = createAndSaveQuestion(
@@ -140,7 +147,6 @@ public class DataSeeder implements CommandLineRunner {
                 createAnswer("Kotlin", true, "en", q2En),
                 createAnswer("JavaScript", false, "en", q2En)));
 
-        // French version
         Category techAndDevFr = createAndSaveCategory("Tech & Dev", "fr", 15);
 
         Question q1Fr = createAndSaveQuestion(
@@ -197,20 +203,24 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedTestUser() {
-        // Check if test user already exists to maintain idempotency
-        if (userRepository.count() > 0) {
+        if (!testUserProperties.isConfigured()) {
+            log.warn("Test user seeding skipped: app.seed.test-user.* properties are not set.");
+            return;
+        }
+
+        if (userRepository.existsByEmail(testUserProperties.email())
+                || userRepository.existsByUsername(testUserProperties.username())) {
             return;
         }
 
         User testUser = new User();
-        testUser.setUsername("testuser");
-        testUser.setEmail("test@defimeninges.com");
-        // For test purposes
-        testUser.setPasswordHash("password");
+        testUser.setUsername(testUserProperties.username());
+        testUser.setEmail(testUserProperties.email());
+        testUser.setPasswordHash(passwordEncoder.encode(testUserProperties.password()));
         testUser.setRole(Role.PLAYER);
         testUser.setTotalScore(0);
-        User savedUser = userRepository.save(testUser);
+        userRepository.save(testUser);
 
-        log.info("Test user created with ID: {}", savedUser.getId());
+        log.info("Seeded test user '{}'.", testUserProperties.username());
     }
 }

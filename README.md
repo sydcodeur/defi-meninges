@@ -12,13 +12,13 @@ Le projet repose sur des technologies modernes orientées performance et mainten
 - Framework : Angular 21
 - Architecture : Standalone Components (sans modules)
 - Rendu : SSR (Server-Side Rendering) natif pour optimiser le SEO et le temps de chargement initial.
-- Styles : SCSS
+- Styles : SCSS, Tailwind CSS 3, PrimeNG 21
 
 **Backend (Dossier /backend)**
 - Langage : Java 21 (utilisation des Records pour garantir l'immutabilité des données)
-- Framework : Spring Boot 3
+- Framework : Spring Boot 4 (Spring Security, JWT stateless)
 - Accès aux données : Spring Data JPA / Hibernate
-- Base de données : PostgreSQL
+- Base de données : PostgreSQL 16 (Docker Compose)
 
 ## Principes d'Architecture
 
@@ -37,9 +37,12 @@ Le projet repose sur des technologies modernes orientées performance et mainten
 Ouvrez un terminal et placez-vous à la racine du projet :
 
 ```bash
+cp .env.example .env   # puis renseigner les valeurs
+docker compose up -d
 cd backend
-set -a && source ../.env && set +a && mvn clean spring-boot:run
+set -a && source ../.env && set +a && ./mvnw spring-boot:run
 ```
+`SPRING_PROFILES_ACTIVE` est obligatoire (`dev` ou `prod`) : l'application refuse de démarrer sans profil explicite. Le profil `dev` active le seeder de données de test.
 L'API REST sera accessible sur : http://localhost:8080/api
 
 ### 2. Démarrer le Frontend (Application Web)

@@ -1,0 +1,61 @@
+<div class="login-container">
+  <p-card class="login-card">
+    <ng-template pTemplate="header">
+      <div class="card-header">
+        <h2>Connexion</h2>
+        <p class="subtitle">Connectez-vous pour jouer</p>
+      </div>
+    </ng-template>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      @if (errorMessage()) {
+        <p-message severity="error" [text]="errorMessage()!" />
+      }
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input 
+          pInputText 
+          id="email" 
+          type="email"
+          [(ngModel)]="credentials.email"
+          name="email"
+          placeholder="votre@email.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <p-password 
+          id="password"
+          [(ngModel)]="credentials.password"
+          name="password"
+          placeholder="Votre mot de passe"
+          [feedback]="false"
+          [toggleMask]="true"
+          styleClass="w-full"
+          inputStyleClass="w-full"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <p-button 
+        type="submit"
+        label="Se connecter"
+        [loading]="isLoading()"
+        [disabled]="isLoading()"
+        styleClass="w-full"
+      />
+    </form>
+
+    <ng-template pTemplate="footer">
+      <div class="card-footer">
+        <p>Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
+        <a routerLink="/" class="back-link">← Retour à l'accueil</a>
+      </div>
+    </ng-template>
+  </p-card>
+</div>

@@ -5,6 +5,6 @@ import java.util.UUID;
 public record GamePlayerDTO(
         UUID id,
         UUID gameId,
-        UserDTO user,
+        PlayerDTO user,
         Integer score) {
 }
