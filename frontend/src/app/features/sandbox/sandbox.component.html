@@ -1,0 +1,60 @@
+<main class="min-h-screen bg-stage bg-spotlight text-ink px-4 py-10 sm:px-10">
+  <header class="mx-auto max-w-6xl mb-12 flex items-baseline justify-between border-b border-ink/10 pb-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Sandbox</h1>
+    <span class="text-sm uppercase tracking-[0.2em] text-ink-muted">Mode Plateau · tests visuels</span>
+  </header>
+
+  <div class="mx-auto max-w-6xl grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+    <section class="flex flex-col gap-8 min-w-0">
+      <article class="rounded-2xl border border-ink/10 bg-surface/60 p-8 backdrop-blur-sm">
+        <h2 class="mb-6 text-xs uppercase tracking-[0.2em] text-ink-muted">01 · Chronomètre</h2>
+        <div class="flex flex-col items-center gap-8 py-4">
+          <div class="font-display text-[16rem] sm:text-[24rem] font-extrabold leading-[0.78] tracking-tight tabular-nums">05</div>
+          <div class="h-2 w-full max-w-xl overflow-hidden rounded-full bg-ink/10">
+            <div class="h-full w-1/4 rounded-full bg-ruby shadow-ruby-line"></div>
+          </div>
+          <span class="text-sm uppercase tracking-[0.2em] text-ink-muted">secondes restantes</span>
+        </div>
+      </article>
+
+      <article class="rounded-2xl border border-ink/10 bg-surface/60 px-8 pt-8 pb-12 backdrop-blur-sm">
+        <h2 class="mb-6 text-xs uppercase tracking-[0.2em] text-ink-muted">02 · Révélation · Présentiel</h2>
+        <p class="mb-6 text-3xl sm:text-4xl font-semibold tracking-tight break-words">Quelle est la capitale de l'Australie ?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          @for (answer of answers; track answer.key) {
+            <div
+              class="relative overflow-hidden flex items-center gap-5 rounded-xl px-6 py-6"
+              [class]="answer.correct
+                ? 'border border-ink/20 bg-ruby text-ink shadow-ruby-soft'
+                : 'border border-ink/5 bg-surface text-ink-muted'">
+              <div
+                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-xl font-bold"
+                [class]="answer.correct ? 'bg-stage/25' : 'bg-surface-raised'">{{ answer.key }}</div>
+              <div class="flex flex-1 min-w-0 flex-col gap-1.5">
+                <span
+                  class="break-words hyphens-auto text-2xl leading-tight"
+                  [class]="answer.correct ? 'font-semibold' : 'font-medium'">{{ answer.label }}</span>
+                @if (answer.correct) {
+                  <span class="text-xs font-medium uppercase tracking-[0.2em] text-ink/80">Remporté par {{ winner }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </article>
+    </section>
+
+    <article class="rounded-2xl border border-ink/10 bg-surface/60 p-8 backdrop-blur-sm">
+      <h2 class="mb-6 text-xs uppercase tracking-[0.2em] text-ink-muted">03 · Buzzer mobile</h2>
+      <div class="mx-auto flex h-[640px] w-full max-w-[340px] items-center justify-center rounded-[2.5rem] border border-ink/10 bg-surface-sunken">
+        <div class="rounded-full bg-surface p-3 ring-1 ring-ink/10">
+          <button
+            type="button"
+            class="flex h-60 w-60 items-center justify-center rounded-full border-2 border-ink/15 bg-ruby shadow-buzzer transition-all duration-100 active:translate-y-2 active:shadow-buzzer-pressed focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-ink">
+            <span class="font-display text-8xl font-extrabold uppercase tracking-wide text-ink">Buzz</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+</main>

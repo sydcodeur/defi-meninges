@@ -11,8 +11,8 @@ html, body {
 }
 
 body {
-    background-color: theme('colors.background');
-    color: theme('colors.textMain');
+    background-color: theme('colors.slate.50');
+    color: theme('colors.slate.700');
     font-family: var(--font-family, system-ui, -apple-system, sans-serif);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
