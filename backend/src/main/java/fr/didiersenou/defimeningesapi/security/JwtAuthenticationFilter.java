@@ -21,6 +21,8 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    static final String JWT_ERROR_ATTRIBUTE = "jwtException";
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
@@ -60,13 +62,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (ExpiredJwtException ex) {
-            request.setAttribute("jwtException", "Token has expired");
+            request.setAttribute(JWT_ERROR_ATTRIBUTE, "Token has expired");
         } catch (MalformedJwtException ex) {
-            request.setAttribute("jwtException", "Invalid JWT token format");
+            request.setAttribute(JWT_ERROR_ATTRIBUTE, "Invalid JWT token format");
         } catch (SignatureException ex) {
-            request.setAttribute("jwtException", "Invalid JWT signature");
+            request.setAttribute(JWT_ERROR_ATTRIBUTE, "Invalid JWT signature");
         } catch (Exception ex) {
-            request.setAttribute("jwtException", "JWT authentication failed");
+            request.setAttribute(JWT_ERROR_ATTRIBUTE, "JWT authentication failed");
         }
 
         filterChain.doFilter(request, response);
