@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Document** | 1 — Vision produit |
-| **Statut** | Brouillon v0.1 |
+| **Statut** | Brouillon v0.2 (charte et règles de buzz validées) |
 | **Dernière mise à jour** | 11 octobre 2026 |
 | **Porteur** | KovaSoft |
 
@@ -48,10 +48,35 @@ Le mode phare. C'est l'expérience complète d'un jeu télévisé, pensée pour 
 **Déroulé type**
 1. L'animateur crée une partie depuis la Régie et choisit un thème.
 2. Le Plateau affiche le code et le QR code. Les participants rejoignent la partie depuis leur téléphone.
-3. L'animateur lance chaque question. Le Plateau l'affiche et le chronomètre démarre.
-4. Les participants répondent sur leur Buzzer. Une seule réponse est acceptée, et elle est verrouillée dès qu'elle est envoyée.
-5. L'animateur déclenche la révélation : bonne réponse, répartition des votes, puis classement.
-6. En fin de partie : podium et récapitulatif.
+3. L'animateur lance chaque question. Le Plateau affiche la question et ses quatre propositions (A, B, C, D), et le chronomètre démarre.
+4. Le téléphone de chaque participant devient un **buzzer pur**. Il n'affiche ni la question ni les propositions : le regard reste sur le Plateau.
+5. Le premier participant à buzzer **prend la main** et donne sa réponse à voix haute. Les autres buzzers sont verrouillés pendant ce temps.
+6. L'animateur valide ou refuse la réponse depuis la Régie (voir les règles de buzz ci-dessous).
+7. Révélation sur le Plateau : la bonne réponse s'allume, puis le classement s'affiche.
+8. En fin de partie : podium et récapitulatif.
+
+**Règles de buzz et anti-spam**
+
+| Situation | Effet |
+|---|---|
+| Un participant buzze en premier | Il prend la main. Tous les autres buzzers sont verrouillés instantanément. |
+| La réponse est **bonne** | Le participant marque les points, puis la question passe à la révélation. |
+| La réponse est **mauvaise** | Le participant est **gelé** : son buzzer reste bloqué jusqu'à la fin de la question. Les buzzers des autres participants non gelés sont **réactivés instantanément**. |
+| Tous les participants sont gelés, ou le chronomètre arrive à zéro | Les buzzers sont désactivés, et l'animateur déclenche la révélation. |
+
+États d'un buzzer pendant une question :
+
+```mermaid
+stateDiagram-v2
+    [*] --> Arme : question ouverte
+    Arme --> AVous : je buzze en premier
+    Arme --> Verrouille : un autre joueur prend la main
+    Verrouille --> Arme : sa réponse est refusée
+    AVous --> Gele : ma réponse est refusée
+    AVous --> [*] : ma réponse est validée
+    Verrouille --> [*] : sa réponse est validée
+    Gele --> [*] : fin de la question
+```
 
 **Chronomètre anti-triche**
 
@@ -60,12 +85,12 @@ L'équité est une condition non négociable du mode Plateau. Ses règles :
 | Règle | Mise en œuvre |
 |---|---|
 | Le serveur est l'unique source de vérité du temps | Le serveur horodate l'ouverture et la clôture de chaque question. Les clients ne font qu'afficher un compte à rebours. |
-| Aucune réponse hors délai | Toute réponse reçue après l'échéance du serveur est rejetée, quoi qu'affiche l'écran du participant. |
-| La bonne réponse ne fuit jamais | Le serveur n'envoie la solution aux clients qu'au moment de la révélation. Elle est absente des données transmises pendant la question. |
-| Une réponse par participant et par question | Le premier envoi est définitif et les envois suivants sont ignorés. |
-| Le score récompense la rapidité de façon équitable | Le temps de réponse se mesure entre l'ouverture de la question côté serveur et la réception de la réponse côté serveur. |
+| Le serveur arbitre l'ordre des buzz | La main revient au premier buzz **reçu par le serveur** pendant que la question est ouverte. L'horloge du téléphone n'entre jamais en compte. |
+| Aucun buzz hors délai | Un buzz reçu avant l'ouverture ou après l'échéance est ignoré. Un buzz envoyé par un participant gelé est rejeté. |
+| La bonne réponse ne fuit jamais | Le serveur n'envoie la solution aux clients qu'au moment de la révélation. |
+| Le gel est appliqué par le serveur | L'état « gelé » est conservé côté serveur. Recharger la page ou se reconnecter ne le lève pas. |
 
-> **Cas des streamers.** Un flux vidéo a plusieurs secondes de retard sur le direct. Le Buzzer affiche donc lui-même la question et ses réponses, de façon synchronisée avec le serveur. Le joueur ne dépend jamais du flux vidéo pour répondre à temps.
+> **Cas des streamers.** Un flux vidéo a plusieurs secondes de retard sur le direct, ce qui défavorise le public qui ne voit la question que par le stream. Le principe du buzzer pur rend ce point critique. Voir la section 7 (risques).
 
 ### 2.2 Mode Salon (V2)
 
@@ -92,8 +117,8 @@ flowchart LR
     R["Régie<br/>animateur · ordinateur"] -- commandes --> S[("Serveur<br/>source de vérité<br/>état · chrono · scores")]
     S -- état de la partie --> R
     S -- diffusion --> P["Plateau<br/>affichage public · grand écran"]
-    S -- question · échéance --> B["Buzzer<br/>participants · mobile"]
-    B -- réponse horodatée --> S
+    S -- état du buzzer --> B["Buzzer<br/>participants · mobile"]
+    B -- buzz --> S
 ```
 
 Le serveur détient l'état de la partie. Les trois vues ne font que **le refléter (Plateau), le piloter (Régie) ou l'alimenter (Buzzer)**. Aucune vue ne décide seule d'une transition d'état.
@@ -108,7 +133,8 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 
 **Fonctionnalités MVP**
 - Créer une partie : thème, langue, nombre de questions, durée du chronomètre.
-- Suivre la salle : participants connectés, nombre de réponses en direct pendant une question.
+- Suivre la salle : participants connectés, joueur qui a la main, joueurs gelés.
+- Arbitrer : **valider** ou **refuser** la réponse orale du joueur qui a la main, en un seul geste.
 - Piloter : lancer la partie, ouvrir une question, révéler, afficher le classement, passer à la question suivante, terminer.
 - Voir la question suivante avant le public, pour préparer son intervention.
 - Garder la main en cas de problème : mettre en pause, retirer un participant.
@@ -127,8 +153,9 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 
 **Fonctionnalités MVP**
 - Lobby : code de la partie, QR code, adresse, participants qui arrivent.
-- Question : énoncé, réponses, chronomètre, compteur de réponses reçues.
-- Révélation : bonne réponse, répartition des votes.
+- Question : énoncé, quatre propositions en grille 2×2, chronomètre géant.
+- Prise de main : nom du joueur qui a buzzé, et indication des joueurs gelés.
+- Révélation : la bonne réponse s'allume, les autres propositions restent en retrait.
 - Classement intermédiaire, puis podium final.
 
 **Exigences**
@@ -143,13 +170,15 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 |---|---|
 | **Utilisateur** | Le participant (invité, sans compte) |
 | **Appareil** | Smartphone personnel |
-| **Rôle** | Répondre, vite |
+| **Rôle** | Buzzer, le plus vite possible |
+
+**Principe : le buzzer pur.** Le téléphone n'affiche **aucune question** et aucune proposition. L'écran est occupé par un seul gros bouton. Toute l'attention reste sur le Plateau et sur l'animateur.
 
 **Fonctionnalités MVP**
 - Rejoindre la partie : code ou QR code, puis pseudo.
-- Afficher la question et ses réponses, synchronisées avec le serveur.
-- Répondre d'un seul geste, avec confirmation immédiate du verrouillage.
-- Voir son résultat (bonne ou mauvaise réponse, points gagnés) et sa position au classement.
+- Un bouton unique, lisible à distance, dont l'aspect traduit l'état : armé, verrouillé (un autre joueur a la main), à vous, gelé.
+- Un retour immédiat à l'appui : animation d'enfoncement et vibration quand l'appareil le permet.
+- Entre les questions : résultat personnel et position au classement.
 
 **Exigences (objectifs à valider en tests)**
 - **Ultra-rapide** : affichage utilisable en moins de 2 secondes sur un réseau mobile moyen, et une page la plus légère possible.
@@ -167,6 +196,7 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 | Participant (Buzzer) | Compte utilisateur obligatoire | Rendre possible l'accès invité, avec un simple pseudo |
 | Temps réel | Requêtes REST | Canal temps réel (WebSocket) entre le serveur et les trois vues |
 | Questions | Les entités contiennent la bonne réponse | Des DTO qui ne transmettent jamais la solution avant la révélation |
+| Buzz | Inexistant | Un événement de buzz arbitré par le serveur, avec l'état de chaque joueur (armé, verrouillé, main, gelé) par question |
 
 ---
 
@@ -183,14 +213,44 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 
 ### 4.2 Charte graphique
 
-> **Statut : en cours de test (à définir).**
-> La palette de couleurs, les typographies et la charte graphique sont en phase d'exploration visuelle. **Aucune valeur n'est figée dans ce document.** Elles seront arrêtées à l'issue des tests et documentées dans un document dédié au design system.
+> **Statut : validée à l'issue des tests visuels (11 octobre 2026).**
+> Les valeurs ci-dessous sont déclarées une seule fois, sous forme de tokens dans `frontend/tailwind.config.js`. Les composants n'utilisent que ces tokens, jamais de valeur hexadécimale.
 
-Les points en cours d'évaluation :
-- la palette (fond, surfaces, couleur d'accent, états de réponse) ;
-- le couple de typographies (titres de caractère, texte courant, chiffres du chronomètre et des scores) ;
-- le traitement des textures et de la matière ;
-- le langage de mouvement (compte à rebours, révélation, podium).
+**Couleurs**
+
+| Token | Rôle | Valeur |
+|---|---|---|
+| `stage` | Fond de scène, le plus sombre | `#0A0A0A` |
+| `stage-mid`, `stage-light` | Paliers du dégradé de projecteur | `#141414`, `#2A2A2A` |
+| `surface` | Cartes, blocs | `#171717` |
+| `surface-raised` | Éléments en relief (lettres, barres en retrait) | `#262626` |
+| `surface-sunken` | Zones en creux (fond du Buzzer) | `#0A0A0A` |
+| `ink` | Texte principal | `#FFFFFF` |
+| `ink-muted` | Texte secondaire, propositions en retrait | `#A3A3A3` |
+| `ink-subtle` | Texte décoratif uniquement, jamais pour une information | `#737373` |
+| `ruby` | **Accent signature (Rubis Intense)** : bonne réponse, Buzzer, chronomètre | `#BE123C` |
+| `ruby-bright` | Survol et état actif de l'accent | `#E11D48` |
+| `ruby-deep` | Épaisseur du Buzzer, ombres | `#881337` |
+
+Le rubis est réservé aux aplats portant un texte blanc (contraste de 7,6:1). Il ne sert jamais de couleur de texte sur un fond sombre, où il serait illisible.
+
+**Typographie**
+
+| Usage | Police |
+|---|---|
+| Chiffres et mots-signal (chronomètre, « BUZZ », scores) | **Barlow Condensed**, graisse 600 à 800 (token `font-display`) |
+| Questions, propositions, interface | Police système sans-serif |
+
+**Matière et lumière**
+
+| Élément | Traitement |
+|---|---|
+| Fond | Dégradé radial centré en haut, qui simule un projecteur de scène (token `bg-spotlight`) |
+| Ombres de l'accent | Douces, portées vers le bas, sans effet néon (tokens `shadow-ruby-soft`, `shadow-ruby-line`) |
+| Buzzer | Bouton d'arcade en relief qui s'enfonce à l'appui (tokens `shadow-buzzer`, `shadow-buzzer-pressed`) |
+| Révélation | La bonne réponse passe en rubis, les autres restent en gris terne |
+
+**Encore à définir :** le langage de mouvement (compte à rebours, révélation, podium) et le visuel des états verrouillé et gelé du Buzzer.
 
 ### 4.3 Exigences fixes, quelle que soit la charte retenue
 
@@ -226,8 +286,8 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | Indicateur | Ce qu'il mesure |
 |---|---|
 | Temps pour rejoindre | Délai entre le scan du QR code et l'arrivée du participant dans le lobby |
-| Taux de participation | Part des participants connectés qui répondent à chaque question |
-| Latence de réponse | Délai entre l'envoi d'une réponse et la confirmation de son verrouillage |
+| Taux de participation | Part des participants connectés qui buzzent au moins une fois par partie |
+| Latence de buzz | Délai entre l'appui sur le Buzzer et la mise à jour de l'état chez tous les joueurs |
 | Parties menées à terme | Part des parties lancées qui atteignent le podium |
 | Réutilisation | Part des animateurs qui organisent une deuxième partie |
 
@@ -238,10 +298,12 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | Sujet | Risque ou question | Piste |
 |---|---|---|
 | Réseau en salle | Wi-Fi saturé lors d'un événement de plusieurs centaines de personnes | Buzzer très léger, reconnexion automatique, messages temps réel minimaux |
-| Retard des streams | Le public d'un stream voit la question avec du retard | La question s'affiche sur le Buzzer, synchronisée avec le serveur (voir 2.1) |
+| Retard des streams | Avec un buzzer pur, le public d'un stream découvre la question plusieurs secondes après la salle, et ne peut pas gagner la main | **Question ouverte.** Pistes : compenser le retard, configurable par le streamer, ou afficher la question sur le Buzzer uniquement dans un mode streamer |
+| Équité réseau | Un participant sur un réseau lent buzze plus tard qu'il n'a appuyé | Mesurer l'écart réel en tests avant d'envisager une compensation de latence |
+| Arbitrage oral | Une réponse donnée à voix haute est mal entendue dans une salle bruyante | L'animateur reste seul juge. Il faudra étudier un micro de scène ou l'affichage de la lettre choisie |
 | Montée en charge | De nombreux participants simultanés sur une même partie | Valider l'architecture temps réel par des tests de charge avant le lancement |
 | Identité des invités | Des pseudos inappropriés affichés sur grand écran | L'animateur peut retirer un participant, et un filtrage pourra être ajouté |
-| Charte graphique | Pas encore arrêtée | Phase de tests visuels en cours (voir 4.2) |
+| Charte graphique | Le mouvement et les états du Buzzer ne sont pas encore définis | À traiter avec les écrans du MVP (voir 4.2) |
 
 ---
 
@@ -250,7 +312,7 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | Phase | Objectif | Contenu |
 |---|---|---|
 | **0 — Socle** | Fondations techniques | Authentification, parties, hôte, gestion des erreurs, profils d'environnement *(fait)* |
-| **1 — Design** | Identité et design system | Tests visuels, charte arrêtée, tokens, composants clés |
+| **1 — Design** | Identité et design system | Tests visuels et charte *(faits)*, tokens Tailwind *(faits)*, preset PrimeNG, composants clés |
 | **2 — MVP Plateau** | Première émission jouable | Temps réel, Régie, Plateau, Buzzer, chronomètre anti-triche, scores |
 | **3 — Mise en production** | Fiabilité | Migrations de schéma, tests automatisés, CI/CD, tests de charge, supervision |
 | **4 — Mode Salon** | Usage grand public | Jeu autonome, écran partagé facultatif |
@@ -267,5 +329,8 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | **Régie** | La vue de pilotage réservée à l'animateur. |
 | **Plateau** | La vue publique projetée ou diffusée. C'est aussi le nom du mode B2B et streamers. |
 | **Buzzer** | La Web App mobile du participant. |
-| **Révélation** | Le moment où la bonne réponse et la répartition des votes sont dévoilées. |
+| **Buzz** | L'appui d'un participant sur son Buzzer pour demander la parole. |
+| **Main** | Le droit de répondre, accordé au premier buzz reçu par le serveur. |
+| **Gel** | Le blocage du Buzzer d'un participant jusqu'à la fin de la question, après une mauvaise réponse. |
+| **Révélation** | Le moment où la bonne réponse est dévoilée sur le Plateau. |
 | **Code de partie** | L'identifiant court qu'on saisit pour rejoindre une partie. |
