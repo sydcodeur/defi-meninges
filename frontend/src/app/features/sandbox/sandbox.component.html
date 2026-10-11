@@ -18,7 +18,7 @@
       </article>
 
       <article class="rounded-2xl border border-ink/10 bg-surface/60 px-8 pt-8 pb-12 backdrop-blur-sm">
-        <h2 class="mb-6 text-xs uppercase tracking-[0.2em] text-ink-muted">02 · Révélation</h2>
+        <h2 class="mb-6 text-xs uppercase tracking-[0.2em] text-ink-muted">02 · Révélation · Présentiel</h2>
         <p class="mb-6 text-3xl sm:text-4xl font-semibold tracking-tight break-words">Quelle est la capitale de l'Australie ?</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           @for (answer of answers; track answer.key) {
@@ -30,16 +30,14 @@
               <div
                 class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-xl font-bold"
                 [class]="answer.correct ? 'bg-stage/25' : 'bg-surface-raised'">{{ answer.key }}</div>
-              <span
-                class="flex-1 min-w-0 break-words hyphens-auto text-2xl leading-tight"
-                [class]="answer.correct ? 'font-semibold' : 'font-medium'">{{ answer.label }}</span>
-              <span
-                class="shrink-0 text-3xl tabular-nums"
-                [class]="answer.correct ? 'font-black' : 'font-bold'">{{ answer.percent }}%</span>
-              <div
-                class="absolute bottom-0 left-0 h-1"
-                [class]="answer.correct ? 'bg-ink/70' : 'bg-surface-raised'"
-                [style.width.%]="answer.percent"></div>
+              <div class="flex flex-1 min-w-0 flex-col gap-1.5">
+                <span
+                  class="break-words hyphens-auto text-2xl leading-tight"
+                  [class]="answer.correct ? 'font-semibold' : 'font-medium'">{{ answer.label }}</span>
+                @if (answer.correct) {
+                  <span class="text-xs font-medium uppercase tracking-[0.2em] text-ink/80">Remporté par {{ winner }}</span>
+                }
+              </div>
             </div>
           }
         </div>

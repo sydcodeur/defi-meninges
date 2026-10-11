@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Document** | 1 — Vision produit |
-| **Statut** | Brouillon v0.2 (charte et règles de buzz validées) |
+| **Statut** | Brouillon v0.3 (variantes Présentiel et Streaming du mode Plateau) |
 | **Dernière mise à jour** | 11 octobre 2026 |
 | **Porteur** | KovaSoft |
 
@@ -43,17 +43,39 @@ Le mode phare. C'est l'expérience complète d'un jeu télévisé, pensée pour 
 
 **Cibles**
 - **B2B** : séminaires d'entreprise, team building, écoles, agences événementielles.
-- **Streamers** : animation d'une communauté en direct (Twitch, YouTube Live), où la vue Plateau sert d'incrustation dans le logiciel de diffusion.
+- **Streamers** : animation d'une communauté en direct (Twitch, TikTok Live, YouTube Live), où la vue Plateau sert d'incrustation dans le logiciel de diffusion.
 
-**Déroulé type**
-1. L'animateur crée une partie depuis la Régie et choisit un thème.
+**Deux variantes, choisies par l'animateur depuis la Régie à la création de la partie**
+
+Un flux vidéo a plusieurs secondes de retard sur le direct. Un même mécanisme ne peut donc pas être équitable à la fois pour une salle et pour le public d'un stream. Le mode Plateau se décline en deux variantes :
+
+| | Variante Présentiel | Variante Streaming |
+|---|---|---|
+| **Contexte** | Public dans la même salle que le Plateau | Public derrière un flux vidéo différé |
+| **Téléphone** | Buzzer pur : un seul bouton BUZZ | QCM synchronisé : 4 gros boutons A, B, C, D |
+| **Qui répond** | Le premier qui buzze, à voix haute | Tout le public, en même temps |
+| **Arbitrage** | L'animateur valide ou refuse | Automatique, par le serveur |
+| **Points** | Bonne réponse du joueur qui a la main | Bonne réponse, pondérée par la rapidité |
+| **Chronomètre** | Affiché sur le Plateau | Synchronisé par le serveur directement sur les téléphones |
+| **Révélation** | Bonne réponse et pseudo du joueur le plus rapide, **sans pourcentages** | Bonne réponse et **pourcentages** de votes par proposition |
+| **Dépendance à la vidéo** | Aucune, la salle voit le Plateau en direct | Aucune, le téléphone porte le chronomètre |
+
+Déroulé commun :
+1. L'animateur crée une partie depuis la Régie, choisit un thème et la variante.
 2. Le Plateau affiche le code et le QR code. Les participants rejoignent la partie depuis leur téléphone.
 3. L'animateur lance chaque question. Le Plateau affiche la question et ses quatre propositions (A, B, C, D), et le chronomètre démarre.
-4. Le téléphone de chaque participant devient un **buzzer pur**. Il n'affiche ni la question ni les propositions : le regard reste sur le Plateau.
-5. Le premier participant à buzzer **prend la main** et donne sa réponse à voix haute. Les autres buzzers sont verrouillés pendant ce temps.
-6. L'animateur valide ou refuse la réponse depuis la Régie (voir les règles de buzz ci-dessous).
-7. Révélation sur le Plateau : la bonne réponse s'allume, puis le classement s'affiche.
-8. En fin de partie : podium et récapitulatif.
+4. La suite dépend de la variante (voir 2.1.1 et 2.1.2).
+5. Après chaque question : révélation, puis classement. En fin de partie : podium et récapitulatif.
+
+#### 2.1.1 Variante Présentiel : le buzzer pur
+
+**Principe.** Il n'y a aucune latence vidéo, puisque la salle voit le Plateau en direct. Le téléphone est un simple bouton BUZZ, sans question ni proposition à l'écran : le regard reste sur le Plateau et sur l'animateur.
+
+**Déroulé d'une question**
+1. Le premier participant à buzzer **prend la main**, et les autres buzzers sont verrouillés.
+2. Il donne sa réponse à voix haute.
+3. L'animateur valide ou refuse depuis la Régie.
+4. Révélation : la bonne réponse s'allume sur le Plateau, avec le **pseudo du joueur le plus rapide**. Aucun pourcentage n'est affiché, puisqu'un seul joueur avait le droit de répondre.
 
 **Règles de buzz et anti-spam**
 
@@ -62,7 +84,7 @@ Le mode phare. C'est l'expérience complète d'un jeu télévisé, pensée pour 
 | Un participant buzze en premier | Il prend la main. Tous les autres buzzers sont verrouillés instantanément. |
 | La réponse est **bonne** | Le participant marque les points, puis la question passe à la révélation. |
 | La réponse est **mauvaise** | Le participant est **gelé** : son buzzer reste bloqué jusqu'à la fin de la question. Les buzzers des autres participants non gelés sont **réactivés instantanément**. |
-| Tous les participants sont gelés, ou le chronomètre arrive à zéro | Les buzzers sont désactivés, et l'animateur déclenche la révélation. |
+| Tous les participants sont gelés, ou le chronomètre arrive à zéro | Les buzzers sont désactivés, et l'animateur déclenche la révélation sans vainqueur. |
 
 États d'un buzzer pendant une question :
 
@@ -78,19 +100,32 @@ stateDiagram-v2
     Gele --> [*] : fin de la question
 ```
 
-**Chronomètre anti-triche**
+#### 2.1.2 Variante Streaming : le QCM synchronisé
 
-L'équité est une condition non négociable du mode Plateau. Ses règles :
+**Principe.** Le public d'un stream voit la question plusieurs secondes après le direct. Pour neutraliser ce retard, le serveur pousse l'ouverture de la question et son échéance **directement sur les téléphones**, qui affichent leur propre compte à rebours. Le joueur ne dépend plus de la vidéo pour savoir combien de temps il lui reste.
 
-| Règle | Mise en œuvre |
-|---|---|
-| Le serveur est l'unique source de vérité du temps | Le serveur horodate l'ouverture et la clôture de chaque question. Les clients ne font qu'afficher un compte à rebours. |
-| Le serveur arbitre l'ordre des buzz | La main revient au premier buzz **reçu par le serveur** pendant que la question est ouverte. L'horloge du téléphone n'entre jamais en compte. |
-| Aucun buzz hors délai | Un buzz reçu avant l'ouverture ou après l'échéance est ignoré. Un buzz envoyé par un participant gelé est rejeté. |
-| La bonne réponse ne fuit jamais | Le serveur n'envoie la solution aux clients qu'au moment de la révélation. |
-| Le gel est appliqué par le serveur | L'état « gelé » est conservé côté serveur. Recharger la page ou se reconnecter ne le lève pas. |
+**Déroulé d'une question**
+1. À l'ouverture, chaque téléphone affiche 4 gros boutons A, B, C, D et le chronomètre synchronisé.
+2. Tout le public vote. Le premier choix est définitif et verrouillé dès l'appui.
+3. À l'échéance, le serveur clôt les votes et calcule les points : une bonne réponse rapporte d'autant plus qu'elle a été donnée tôt.
+4. Révélation : la bonne réponse s'allume, avec les **pourcentages** de votes de chaque proposition.
 
-> **Cas des streamers.** Un flux vidéo a plusieurs secondes de retard sur le direct, ce qui défavorise le public qui ne voit la question que par le stream. Le principe du buzzer pur rend ce point critique. Voir la section 7 (risques).
+> **Point d'attention.** Si le téléphone n'affiche que les lettres, le joueur doit toujours lire la question sur le stream différé. Le chronomètre est alors équitable, mais le temps de lecture ne l'est pas. Pour une indépendance totale, le téléphone devra aussi afficher l'énoncé et le texte des propositions, de façon compacte. Ce point est à valider en test (voir section 7).
+
+#### 2.1.3 Chronomètre anti-triche
+
+L'équité est une condition non négociable du mode Plateau, quelle que soit la variante.
+
+| Règle | Variante | Mise en œuvre |
+|---|---|---|
+| Le serveur est l'unique source de vérité du temps | Les deux | Le serveur horodate l'ouverture et la clôture de chaque question. Les clients ne font qu'afficher un compte à rebours. |
+| Aucune action hors délai | Les deux | Un buzz ou un vote reçu avant l'ouverture ou après l'échéance est ignoré. |
+| La bonne réponse ne fuit jamais | Les deux | Le serveur n'envoie la solution aux clients qu'au moment de la révélation. |
+| Le serveur arbitre l'ordre des buzz | Présentiel | La main revient au premier buzz **reçu par le serveur**. L'horloge du téléphone n'entre jamais en compte. |
+| Le gel est appliqué par le serveur | Présentiel | L'état « gelé » est conservé côté serveur. Recharger la page ou se reconnecter ne le lève pas. |
+| Un vote par joueur et par question | Streaming | Le premier vote reçu est définitif, les suivants sont rejetés. |
+| La rapidité se mesure côté serveur | Streaming | Le temps de réponse va de l'ouverture de la question à la réception du vote, tous deux mesurés par le serveur. |
+| Le chronomètre du téléphone est recalé sur le serveur | Streaming | Le téléphone corrige l'écart entre son horloge et celle du serveur. Il n'affiche jamais une échéance plus tardive que celle du serveur. |
 
 ### 2.2 Mode Salon (V2)
 
@@ -117,8 +152,8 @@ flowchart LR
     R["Régie<br/>animateur · ordinateur"] -- commandes --> S[("Serveur<br/>source de vérité<br/>état · chrono · scores")]
     S -- état de la partie --> R
     S -- diffusion --> P["Plateau<br/>affichage public · grand écran"]
-    S -- état du buzzer --> B["Buzzer<br/>participants · mobile"]
-    B -- buzz --> S
+    S -- état du buzzer · chrono --> B["Buzzer<br/>participants · mobile"]
+    B -- buzz ou vote --> S
 ```
 
 Le serveur détient l'état de la partie. Les trois vues ne font que **le refléter (Plateau), le piloter (Régie) ou l'alimenter (Buzzer)**. Aucune vue ne décide seule d'une transition d'état.
@@ -132,9 +167,9 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 | **Rôle** | Piloter l'émission |
 
 **Fonctionnalités MVP**
-- Créer une partie : thème, langue, nombre de questions, durée du chronomètre.
-- Suivre la salle : participants connectés, joueur qui a la main, joueurs gelés.
-- Arbitrer : **valider** ou **refuser** la réponse orale du joueur qui a la main, en un seul geste.
+- Créer une partie : thème, langue, nombre de questions, durée du chronomètre, et **variante (Présentiel ou Streaming)**.
+- Suivre la salle : participants connectés. En Présentiel : joueur qui a la main et joueurs gelés. En Streaming : nombre de votes reçus en direct.
+- Arbitrer, en Présentiel uniquement : **valider** ou **refuser** la réponse orale du joueur qui a la main, en un seul geste.
 - Piloter : lancer la partie, ouvrir une question, révéler, afficher le classement, passer à la question suivante, terminer.
 - Voir la question suivante avant le public, pour préparer son intervention.
 - Garder la main en cas de problème : mettre en pause, retirer un participant.
@@ -154,8 +189,10 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 **Fonctionnalités MVP**
 - Lobby : code de la partie, QR code, adresse, participants qui arrivent.
 - Question : énoncé, quatre propositions en grille 2×2, chronomètre géant.
-- Prise de main : nom du joueur qui a buzzé, et indication des joueurs gelés.
+- Prise de main, en Présentiel : nom du joueur qui a buzzé, et indication des joueurs gelés.
 - Révélation : la bonne réponse s'allume, les autres propositions restent en retrait.
+  - En Présentiel : mention du joueur le plus rapide (« Remporté par … »), **sans pourcentages**.
+  - En Streaming : **pourcentage** de votes sous chaque proposition.
 - Classement intermédiaire, puis podium final.
 
 **Exigences**
@@ -170,13 +207,18 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 |---|---|
 | **Utilisateur** | Le participant (invité, sans compte) |
 | **Appareil** | Smartphone personnel |
-| **Rôle** | Buzzer, le plus vite possible |
+| **Rôle** | Agir le plus vite possible |
 
-**Principe : le buzzer pur.** Le téléphone n'affiche **aucune question** et aucune proposition. L'écran est occupé par un seul gros bouton. Toute l'attention reste sur le Plateau et sur l'animateur.
+Le Buzzer adopte l'une des deux dispositions, selon la variante choisie par l'animateur.
 
-**Fonctionnalités MVP**
+| | Présentiel : buzzer pur | Streaming : QCM synchronisé |
+|---|---|---|
+| **Écran** | Un seul gros bouton BUZZ, sans question ni proposition | 4 gros boutons A, B, C, D et un chronomètre |
+| **États** | Armé, verrouillé (un autre joueur a la main), à vous, gelé | Ouvert, choix verrouillé, clos |
+| **Chronomètre** | Non affiché : il est sur le Plateau | Affiché et recalé sur le serveur |
+
+**Fonctionnalités MVP communes**
 - Rejoindre la partie : code ou QR code, puis pseudo.
-- Un bouton unique, lisible à distance, dont l'aspect traduit l'état : armé, verrouillé (un autre joueur a la main), à vous, gelé.
 - Un retour immédiat à l'appui : animation d'enfoncement et vibration quand l'appareil le permet.
 - Entre les questions : résultat personnel et position au classement.
 
@@ -191,12 +233,13 @@ Le serveur détient l'état de la partie. Les trois vues ne font que **le reflé
 | Concept produit | Socle actuel | Évolution à prévoir |
 |---|---|---|
 | Animateur (Régie) | `Game.host`, utilisateur authentifié via JWT | Restreindre les commandes de pilotage à l'hôte |
-| Modes | `GameMode` : `SOLO`, `MULTIPLAYER` | Faire évoluer vers `PLATEAU`, `SALON`, `ENTRAINEMENT` |
+| Modes | `GameMode` : `SOLO`, `MULTIPLAYER` | Faire évoluer vers `PLATEAU`, `SALON`, `ENTRAINEMENT`, avec une variante `PRESENTIEL` ou `STREAMING` pour `PLATEAU` |
 | Cycle de vie | `GameStatus` : `WAITING`, `IN_PROGRESS`, `FINISHED` | Ajouter des états fins : question ouverte, close, révélée, classement |
 | Participant (Buzzer) | Compte utilisateur obligatoire | Rendre possible l'accès invité, avec un simple pseudo |
 | Temps réel | Requêtes REST | Canal temps réel (WebSocket) entre le serveur et les trois vues |
 | Questions | Les entités contiennent la bonne réponse | Des DTO qui ne transmettent jamais la solution avant la révélation |
-| Buzz | Inexistant | Un événement de buzz arbitré par le serveur, avec l'état de chaque joueur (armé, verrouillé, main, gelé) par question |
+| Buzz (Présentiel) | Inexistant | Un événement de buzz arbitré par le serveur, avec l'état de chaque joueur (armé, verrouillé, main, gelé) par question |
+| Vote (Streaming) | Inexistant | Un vote par joueur et par question, horodaté par le serveur, avec un score pondéré par la rapidité |
 
 ---
 
@@ -248,7 +291,7 @@ Le rubis est réservé aux aplats portant un texte blanc (contraste de 7,6:1). I
 | Fond | Dégradé radial centré en haut, qui simule un projecteur de scène (token `bg-spotlight`) |
 | Ombres de l'accent | Douces, portées vers le bas, sans effet néon (tokens `shadow-ruby-soft`, `shadow-ruby-line`) |
 | Buzzer | Bouton d'arcade en relief qui s'enfonce à l'appui (tokens `shadow-buzzer`, `shadow-buzzer-pressed`) |
-| Révélation | La bonne réponse passe en rubis, les autres restent en gris terne |
+| Révélation | La bonne réponse passe en rubis, les autres restent en gris terne. En Présentiel, une mention discrète nomme le vainqueur. En Streaming, les pourcentages s'affichent. |
 
 **Encore à définir :** le langage de mouvement (compte à rebours, révélation, podium) et le visuel des états verrouillé et gelé du Buzzer.
 
@@ -264,7 +307,7 @@ Le rubis est réservé aux aplats portant un texte blanc (contraste de 7,6:1). I
 ## 5. Périmètre du MVP
 
 ### Inclus
-- Le mode Plateau complet, avec ses trois vues : Régie, Plateau, Buzzer.
+- Le mode Plateau complet, avec ses trois vues (Régie, Plateau, Buzzer) et ses deux variantes (Présentiel, Streaming).
 - Le chronomètre anti-triche, géré par le serveur.
 - L'accès des participants sans compte, par code ou QR code.
 - Un catalogue de questions par thème, en français et en anglais.
@@ -286,8 +329,8 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | Indicateur | Ce qu'il mesure |
 |---|---|
 | Temps pour rejoindre | Délai entre le scan du QR code et l'arrivée du participant dans le lobby |
-| Taux de participation | Part des participants connectés qui buzzent au moins une fois par partie |
-| Latence de buzz | Délai entre l'appui sur le Buzzer et la mise à jour de l'état chez tous les joueurs |
+| Taux de participation | Présentiel : part des participants qui buzzent au moins une fois par partie. Streaming : part des connectés qui votent à chaque question. |
+| Latence de buzz ou de vote | Délai entre l'appui sur le téléphone et la confirmation reçue du serveur |
 | Parties menées à terme | Part des parties lancées qui atteignent le podium |
 | Réutilisation | Part des animateurs qui organisent une deuxième partie |
 
@@ -298,7 +341,8 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | Sujet | Risque ou question | Piste |
 |---|---|---|
 | Réseau en salle | Wi-Fi saturé lors d'un événement de plusieurs centaines de personnes | Buzzer très léger, reconnexion automatique, messages temps réel minimaux |
-| Retard des streams | Avec un buzzer pur, le public d'un stream découvre la question plusieurs secondes après la salle, et ne peut pas gagner la main | **Question ouverte.** Pistes : compenser le retard, configurable par le streamer, ou afficher la question sur le Buzzer uniquement dans un mode streamer |
+| Retard des streams | Le public d'un stream découvre la question plusieurs secondes après le direct | **Résolu** par la variante Streaming : le chronomètre est porté par le téléphone. Il reste à valider en test si l'énoncé doit aussi s'afficher sur le téléphone (voir 2.1.2). |
+| Mauvaise variante choisie | Un animateur lance la variante Présentiel devant un public en stream | La Régie explique clairement les deux variantes à la création de la partie |
 | Équité réseau | Un participant sur un réseau lent buzze plus tard qu'il n'a appuyé | Mesurer l'écart réel en tests avant d'envisager une compensation de latence |
 | Arbitrage oral | Une réponse donnée à voix haute est mal entendue dans une salle bruyante | L'animateur reste seul juge. Il faudra étudier un micro de scène ou l'affichage de la lettre choisie |
 | Montée en charge | De nombreux participants simultanés sur une même partie | Valider l'architecture temps réel par des tests de charge avant le lancement |
@@ -331,6 +375,8 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | **Buzzer** | La Web App mobile du participant. |
 | **Buzz** | L'appui d'un participant sur son Buzzer pour demander la parole. |
 | **Main** | Le droit de répondre, accordé au premier buzz reçu par le serveur. |
-| **Gel** | Le blocage du Buzzer d'un participant jusqu'à la fin de la question, après une mauvaise réponse. |
+| **Gel** | En Présentiel, le blocage du Buzzer d'un participant jusqu'à la fin de la question, après une mauvaise réponse. |
+| **Présentiel** | Variante du mode Plateau pour un public dans la salle : buzzer pur et arbitrage par l'animateur. |
+| **Streaming** | Variante du mode Plateau pour un public derrière un flux vidéo : QCM synchronisé et vote de tout le public. |
 | **Révélation** | Le moment où la bonne réponse est dévoilée sur le Plateau. |
 | **Code de partie** | L'identifiant court qu'on saisit pour rejoindre une partie. |
