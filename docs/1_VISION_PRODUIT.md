@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Document** | 1 — Vision produit |
-| **Statut** | Brouillon v0.3 (variantes Présentiel et Streaming du mode Plateau) |
+| **Statut** | Validé, v1.0 (fin de la phase de conception produit et design) |
 | **Dernière mise à jour** | 11 octobre 2026 |
 | **Porteur** | KovaSoft |
 
@@ -52,13 +52,13 @@ Un flux vidéo a plusieurs secondes de retard sur le direct. Un même mécanisme
 | | Variante Présentiel | Variante Streaming |
 |---|---|---|
 | **Contexte** | Public dans la même salle que le Plateau | Public derrière un flux vidéo différé |
-| **Téléphone** | Buzzer pur : un seul bouton BUZZ | QCM synchronisé : 4 gros boutons A, B, C, D |
+| **Téléphone** | Buzzer pur : un seul bouton BUZZ | QCM synchronisé : l'énoncé et 4 gros boutons A, B, C, D portant le texte des propositions |
 | **Qui répond** | Le premier qui buzze, à voix haute | Tout le public, en même temps |
 | **Arbitrage** | L'animateur valide ou refuse | Automatique, par le serveur |
 | **Points** | Bonne réponse du joueur qui a la main | Bonne réponse, pondérée par la rapidité |
 | **Chronomètre** | Affiché sur le Plateau | Synchronisé par le serveur directement sur les téléphones |
 | **Révélation** | Bonne réponse et pseudo du joueur le plus rapide, **sans pourcentages** | Bonne réponse et **pourcentages** de votes par proposition |
-| **Dépendance à la vidéo** | Aucune, la salle voit le Plateau en direct | Aucune, le téléphone porte le chronomètre |
+| **Dépendance à la vidéo** | Aucune, la salle voit le Plateau en direct | Aucune, le téléphone porte l'énoncé, les propositions et le chronomètre |
 
 Déroulé commun :
 1. L'animateur crée une partie depuis la Régie, choisit un thème et la variante.
@@ -102,15 +102,15 @@ stateDiagram-v2
 
 #### 2.1.2 Variante Streaming : le QCM synchronisé
 
-**Principe.** Le public d'un stream voit la question plusieurs secondes après le direct. Pour neutraliser ce retard, le serveur pousse l'ouverture de la question et son échéance **directement sur les téléphones**, qui affichent leur propre compte à rebours. Le joueur ne dépend plus de la vidéo pour savoir combien de temps il lui reste.
+**Principe.** Le public d'un stream voit la question plusieurs secondes après le direct. Pour neutraliser ce retard, le serveur pousse **directement sur les téléphones** l'énoncé, les propositions et l'échéance de la question. Chaque téléphone affiche son propre compte à rebours. Le joueur n'attend jamais la vidéo, ni pour lire la question, ni pour savoir combien de temps il lui reste.
 
 **Déroulé d'une question**
-1. À l'ouverture, chaque téléphone affiche 4 gros boutons A, B, C, D et le chronomètre synchronisé.
+1. À l'ouverture, chaque téléphone affiche l'énoncé, 4 gros boutons A, B, C, D portant le texte des propositions, et le chronomètre synchronisé.
 2. Tout le public vote. Le premier choix est définitif et verrouillé dès l'appui.
 3. À l'échéance, le serveur clôt les votes et calcule les points : une bonne réponse rapporte d'autant plus qu'elle a été donnée tôt.
 4. Révélation : la bonne réponse s'allume, avec les **pourcentages** de votes de chaque proposition.
 
-> **Point d'attention.** Si le téléphone n'affiche que les lettres, le joueur doit toujours lire la question sur le stream différé. Le chronomètre est alors équitable, mais le temps de lecture ne l'est pas. Pour une indépendance totale, le téléphone devra aussi afficher l'énoncé et le texte des propositions, de façon compacte. Ce point est à valider en test (voir section 7).
+> **Règle.** Le téléphone affiche **obligatoirement** l'énoncé et le texte des propositions. Si le joueur devait attendre que le flux vidéo différé affiche la question pour la lire, son chronomètre local serait déjà en partie, voire totalement, écoulé. Le Plateau diffusé dans le stream reste une mise en scène : il n'est jamais nécessaire pour jouer.
 
 #### 2.1.3 Chronomètre anti-triche
 
@@ -213,7 +213,7 @@ Le Buzzer adopte l'une des deux dispositions, selon la variante choisie par l'an
 
 | | Présentiel : buzzer pur | Streaming : QCM synchronisé |
 |---|---|---|
-| **Écran** | Un seul gros bouton BUZZ, sans question ni proposition | 4 gros boutons A, B, C, D et un chronomètre |
+| **Écran** | Un seul gros bouton BUZZ, sans question ni proposition | L'énoncé, 4 gros boutons A, B, C, D portant le texte des propositions, et un chronomètre |
 | **États** | Armé, verrouillé (un autre joueur a la main), à vous, gelé | Ouvert, choix verrouillé, clos |
 | **Chronomètre** | Non affiché : il est sur le Plateau | Affiché et recalé sur le serveur |
 
@@ -341,7 +341,6 @@ Les valeurs cibles seront fixées après les premiers tests en conditions réell
 | Sujet | Risque ou question | Piste |
 |---|---|---|
 | Réseau en salle | Wi-Fi saturé lors d'un événement de plusieurs centaines de personnes | Buzzer très léger, reconnexion automatique, messages temps réel minimaux |
-| Retard des streams | Le public d'un stream découvre la question plusieurs secondes après le direct | **Résolu** par la variante Streaming : le chronomètre est porté par le téléphone. Il reste à valider en test si l'énoncé doit aussi s'afficher sur le téléphone (voir 2.1.2). |
 | Mauvaise variante choisie | Un animateur lance la variante Présentiel devant un public en stream | La Régie explique clairement les deux variantes à la création de la partie |
 | Équité réseau | Un participant sur un réseau lent buzze plus tard qu'il n'a appuyé | Mesurer l'écart réel en tests avant d'envisager une compensation de latence |
 | Arbitrage oral | Une réponse donnée à voix haute est mal entendue dans une salle bruyante | L'animateur reste seul juge. Il faudra étudier un micro de scène ou l'affichage de la lettre choisie |
